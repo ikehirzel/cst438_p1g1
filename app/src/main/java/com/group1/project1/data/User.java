@@ -1,4 +1,4 @@
-package com.group1.project1;
+package com.group1.project1.data;
 
 import java.util.ArrayList;
 
