@@ -30,7 +30,6 @@ public class AccountActivity extends AppCompatActivity {
 
 		// setting button listeners
 		loginButton.setOnClickListener(new View.OnClickListener() {
-
 			public void onClick(View view) {
 				// get the entered credentials
 				String username = usernameEdit.getText().toString();
@@ -56,7 +55,7 @@ public class AccountActivity extends AppCompatActivity {
 
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("id", -1);
+				resultIntent.putExtra("id", 0);
 
 				// returning data
 				setResult(RESULT_OK, resultIntent);
