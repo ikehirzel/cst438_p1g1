@@ -1,63 +1,67 @@
 package com.group1.project1.data;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 
+@Entity(tableName="user")
 public class User {
 
-    // Username and Password Information
-    private String username;
-    private String password;
+	// Username and Password Information
+	@PrimaryKey(autoGenerate = true)
+	private int id;
+	private String username;
+	private String password;
+	private String berries;
+	private String pokemon;
 
-    // List of User's owned Pokemon and berries
-    private ArrayList<String> ownedPokemon = new ArrayList<>();
-    private ArrayList<String> ownedBerries = new ArrayList<>();
+	// Constructor
+	public User(int id, String username, String password, String berries, String pokemon) {
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.berries = berries;
+		this.pokemon = pokemon;
+	}
 
-    // ^^^ NOTE: Change <String> later when classes have all been made.
+	public int getId() {
+		return id;
+	}
 
-    // Default Constructor
-    public User() {
-        this.username = "n/a";
-        this.password = "n/a";
-    }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    // Constructor
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    // Setters and Getters
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getBerries() {
+		return berries;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setBerries(String berries) {
+		this.berries = berries;
+	}
 
-    public ArrayList<String> getOwnedPokemon() {
-        return ownedPokemon;
-    }
+	public String getPokemon() {
+		return pokemon;
+	}
 
-    public void setOwnedPokemon(ArrayList<String> ownedPokemon) {
-        this.ownedPokemon = ownedPokemon;
-    }
-
-    public ArrayList<String> getOwnedBerries() {
-        return ownedBerries;
-    }
-
-    public void setOwnedBerries(ArrayList<String> ownedBerries) {
-        this.ownedBerries = ownedBerries;
-    }
-
+	public void setPokemon(String pokemon) {
+		this.pokemon = pokemon;
+	}
 }
