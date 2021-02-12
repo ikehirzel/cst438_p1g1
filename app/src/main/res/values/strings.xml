@@ -4,4 +4,8 @@
     <string name="password_label">Password</string>
     <string name="create_account_label">Create Account</string>
     <string name="login_label">Login</string>
+    <string name="catch_pokemon_label">Catch Pokemon</string>
+    <string name="view_inventory_label">View Inventory</string>
+	<string name="logout_label">Logout</string>
+	<string name="delete_account_label">Delete Account</string>
 </resources>

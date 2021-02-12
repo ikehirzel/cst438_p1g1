@@ -6,8 +6,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+
+import com.group1.project1.data.User;
 
 public class AccountActivity extends AppCompatActivity {
 
@@ -16,6 +20,27 @@ public class AccountActivity extends AppCompatActivity {
 
 	private Button loginButton;
 	private Button createAccountButton;
+
+	private AppDatabase db;
+
+	private boolean verifyCredentials(String username, String password) {
+
+		boolean valid = true;
+		// flag error if the user did not put in a username
+		if (username.isEmpty()) {
+			usernameEdit.setError("Username may not be empty");
+			valid = false;
+		}
+
+		// flag error if the password did not put in a username
+		if (password.isEmpty()) {
+			passwordEdit.setError("Password may not be empty");
+			valid = false;
+		}
+
+		// exit is credentials were not valid
+		return valid;
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,35 +53,32 @@ public class AccountActivity extends AppCompatActivity {
 		usernameEdit = findViewById(R.id.username_edit);
 		passwordEdit = findViewById(R.id.password_edit);
 
+		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
+				.allowMainThreadQueries()   //Allows room to do operation on main thread
+				.build();
+
 		// setting button listeners
 		loginButton.setOnClickListener(new View.OnClickListener() {
-
 			public void onClick(View view) {
-				// get the entered credentials
 				String username = usernameEdit.getText().toString();
 				String password = passwordEdit.getText().toString();
+				if (!verifyCredentials(username, password)) return;
 
-				boolean inputNotValid = false;
-				// flag error if the user did not put in a username
-				if (username.isEmpty()) {
-					usernameEdit.setError("Username may not be empty");
-					inputNotValid = true;
+
+				User user = db.getUserDao().getUser(username);
+
+				if (user == null) {
+					usernameEdit.setError("User '" + username + "' does not exist");
+					return;
 				}
-
-				// flag error if the password did not put in a username
-				if (password.isEmpty()) {
-					passwordEdit.setError("Password may not be empty");
-					inputNotValid = true;
+				if (!user.getPassword().equals(password)) {
+					passwordEdit.setError("Incorrect password");
+					return;
 				}
-
-				// exit is credentials were not valid
-				if (inputNotValid) return;
-
-				// TODO get a way to return user id from credentials
 
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("id", -1);
+				resultIntent.putExtra("id", user.getId());
 
 				// returning data
 				setResult(RESULT_OK, resultIntent);
@@ -67,7 +89,28 @@ public class AccountActivity extends AppCompatActivity {
 		createAccountButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
+				String username = usernameEdit.getText().toString();
+				String password = passwordEdit.getText().toString();
 
+				if (!verifyCredentials(username, password)) return;
+				if (db.getUserDao().getUser(username) != null) {
+					usernameEdit.setError("User '" + username + "' already exists");
+					return;
+				}
+
+				Toast.makeText(view.getContext(), "Successfully created user: " + username, Toast.LENGTH_SHORT).show();
+				User user = new User();
+				user.setUsername(username);
+				user.setPassword(password);
+				db.getUserDao().insert(user);
+
+				// loading credentials into intent to be returned
+				Intent resultIntent = new Intent();
+				resultIntent.putExtra("id", user.getId());
+
+				// returning data
+				setResult(RESULT_OK, resultIntent);
+				finish();
 			}
 		});
 	}
