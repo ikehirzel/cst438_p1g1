@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 	private TextView greetingView;
 	private Button catchButton;
 	private Button inventoryButton;
+	private Button deleteButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 		greetingView = findViewById(R.id.greeting_view);
 		catchButton = findViewById(R.id.catch_button);
 		inventoryButton = findViewById(R.id.inventory_button);
+		deleteButton = findViewById(R.id.delete_account_button);
 
 		// TODO set greetingView to say "Hello <username>"
 
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
-		catchButton.setOnClickListener(new View.OnClickListener() {
+		inventoryButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
 				// if not logged in, do nothing
@@ -59,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
 				// pass in user id so we can see inventory
 				inventoryIntent.putExtra("id", userId);
 				startActivity(inventoryIntent);
+			}
+		});
+
+		deleteButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View view) {
+				if (userId < 0) return;
+				// TODO Implement this function
 			}
 		});
 	}
