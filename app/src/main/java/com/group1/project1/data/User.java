@@ -11,10 +11,10 @@ public class User {
 	// Username and Password Information
 	@PrimaryKey(autoGenerate = true)
 	private int id;
-	private String username;
-	private String password;
-	private String berries;
-	private String pokemon;
+	private String username = null;
+	private String password = null;
+	private String berries = null;
+	private String pokemon = null;
 
 	// Constructor
 	public User(int id, String username, String password, String berries, String pokemon) {
@@ -23,6 +23,9 @@ public class User {
 		this.password = password;
 		this.berries = berries;
 		this.pokemon = pokemon;
+	}
+
+	public User() {
 	}
 
 	public int getId() {
