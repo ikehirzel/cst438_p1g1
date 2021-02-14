@@ -3,6 +3,10 @@ package com.group1.project1.data;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import java.util.ArrayList;
 
 @Entity(tableName="user")
@@ -64,7 +68,19 @@ public class User {
 		return pokemon;
 	}
 
-	public void setPokemon(String pokemon) {
-		this.pokemon = pokemon;
+	public void setPokemon(String pokemon) { this.pokemon = pokemon; }
+
+	public void addPokemon(int pokemonId) {
+		Gson gson = new Gson();
+		JsonArray arr = gson.fromJson(pokemon, JsonObject.class).getAsJsonArray();
+		arr.add(pokemonId);
+		pokemon = arr.toString();
+	}
+
+	public void addBerry(int berryId) {
+		Gson gson = new Gson();
+		JsonArray arr = gson.fromJson(berries, JsonObject.class).getAsJsonArray();
+		arr.add(berryId);
+		berries = arr.toString();
 	}
 }
