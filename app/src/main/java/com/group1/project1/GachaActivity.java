@@ -1,5 +1,7 @@
 package com.group1.project1;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,8 +12,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.gson.JsonObject;
+import com.group1.project1.api.PokeApi;
+
+import java.net.URL;
 import java.util.Random;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -30,17 +39,63 @@ public class GachaActivity extends AppCompatActivity {
 Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 imageView.setImageBitmap(bmp);*/
 
-	private int getCatch() {
-		Random rng = new Random();
-		int id = rng.nextInt(800);
+	private void updateImage(String urlString, ImageView img) {
+		Log.i("GachaActivity", "update image call");
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					URL url = new URL(urlString);
+					final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+					runOnUiThread(new Runnable() {
+						public void run() {
+							img.setImageBitmap(bmp);
+						}
+					});
 
-		return 0;
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	private void handleCatch(int userId) {
+		Random rng = new Random();
+
+
+		int id = rng.nextInt(800);
+		Log.i("GachaActivity", "Getting data for pokemon: " + id);
+		Call<JsonObject> pokemonCall = api.getPokemon(id);
+		pokemonCall.enqueue(new Callback<JsonObject>() {
+			@Override
+			public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+				JsonObject json = response.body();
+				String name = json.get("name").getAsString();
+				String spriteUrl = json.get("sprites").getAsJsonObject().get("front_default").getAsString();
+				Log.i("GachaActivity", "Poke name: " + name);
+				Log.i("GachaActivity", "Poke url: " + spriteUrl);
+				updateImage(spriteUrl, pokemonImg);
+				msgView.setText("You got " + name);
+			}
+
+			@Override
+			public void onFailure(Call<JsonObject> call, Throwable t) {
+				//Handle failure
+			}
+		});
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gacha);
+
+		int userId = getIntent().getExtras().getInt("id", -1);
+		if (userId == -1) {
+			finish();
+		}
 
 		msgView = findViewById(R.id.gacha_msg_view);
 		confirmButton = findViewById(R.id.gacha_confirm_button);
@@ -51,7 +106,7 @@ imageView.setImageBitmap(bmp);*/
 			.allowMainThreadQueries().build();
 
 		Retrofit retrofit = new Retrofit.Builder()
-				.baseUrl("https://jsonplaceholder.typicode.com/")
+				.baseUrl("https://pokeapi.co/api/v2/")
 				.addConverterFactory(GsonConverterFactory.create())
 				.build();
 
@@ -64,5 +119,7 @@ imageView.setImageBitmap(bmp);*/
 				Log.i("GachaActivity", "Hit confirm button");
 			}
 		});
+
+		handleCatch(userId);
 	}
 }
