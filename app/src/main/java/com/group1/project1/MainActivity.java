@@ -1,6 +1,7 @@
 package com.group1.project1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,15 +10,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.group1.project1.dao.UserDao;
+import com.group1.project1.data.User;
+
 public class MainActivity extends AppCompatActivity {
 
 	public static final int ACCOUNT_REQUEST_CODE = 1;
 
 	private int userId = -1;
 
+	private AppDatabase db;
+
 	private TextView greetingView;
 	private Button catchButton;
 	private Button inventoryButton;
+	private Button logoutButton;
 	private Button deleteButton;
 
 	@Override
@@ -36,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
 		catchButton = findViewById(R.id.catch_button);
 		inventoryButton = findViewById(R.id.inventory_button);
 		deleteButton = findViewById(R.id.delete_account_button);
+		logoutButton = findViewById(R.id.logout_button);
+
+		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
+			.allowMainThreadQueries().build();
 
 		// TODO set greetingView to say "Hello <username>"
 
@@ -45,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View view) {
 				// if not logged in, do nothing
 				if (userId < 0) return;
+				Log.i("MainActivity", "Starting gacha");
 				Intent gachaIntent = new Intent(view.getContext(), GachaActivity.class);
 				// pass in user id so it can add things to user inventory
 				gachaIntent.putExtra("id", userId);
@@ -57,10 +69,20 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View view) {
 				// if not logged in, do nothing
 				if (userId < 0) return;
+				Log.i("MainActivity", "Checking inventory for user: " + userId);
 				Intent inventoryIntent = new Intent(view.getContext(), InventoryActivity.class);
 				// pass in user id so we can see inventory
 				inventoryIntent.putExtra("id", userId);
 				startActivity(inventoryIntent);
+			}
+		});
+
+		logoutButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View view) {
+				Log.i("MainActivity", "Logging out user: " + userId);
+				userId = -1;
+				startActivityForResult(new Intent(view.getContext(), AccountActivity.class), ACCOUNT_REQUEST_CODE);
 			}
 		});
 
@@ -69,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
 			public void onClick(View view) {
 				if (userId < 0) return;
 				// TODO Implement this function
+				UserDao dao = db.getUserDao();
+				User user = dao.getUser(userId);
+				if (user == null) return;
+				Log.i("MainActivity", "Deleting user '" + user.getUsername() + "'");
+				dao.delete(user);
+				startActivityForResult(new Intent(view.getContext(), AccountActivity.class), ACCOUNT_REQUEST_CODE);
 			}
 		});
 	}
@@ -89,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 				}
 
 				Log.i("MainActivity", "Got id: " + id);
+				userId = id;
 				break;
 			}
 		}

@@ -8,4 +8,5 @@
     <string name="view_inventory_label">View Inventory</string>
 	<string name="logout_label">Logout</string>
 	<string name="delete_account_label">Delete Account</string>
+	<string name="confirm_label">Confirm</string>
 </resources>
