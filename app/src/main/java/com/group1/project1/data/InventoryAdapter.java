@@ -15,6 +15,7 @@ public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.View
 
 	private String[] list;
 	private boolean isPokemon;
+
 	public InventoryAdapter(String[] list, boolean isPokemon) {
 		this.list = list;
 		this.isPokemon = isPokemon;
