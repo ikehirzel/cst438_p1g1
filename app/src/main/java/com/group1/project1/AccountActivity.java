@@ -99,14 +99,13 @@ public class AccountActivity extends AppCompatActivity {
 				}
 
 				Toast.makeText(view.getContext(), "Successfully created user: " + username, Toast.LENGTH_SHORT).show();
-				User user = new User();
-				user.setUsername(username);
-				user.setPassword(password);
-				db.getUserDao().insert(user);
+				User user = new User(username, password, null, null);
+				long userId =  db.getUserDao().insert(user);
+				Log.i("AccountActivity", "Created user with id: " + userId);
 
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("id", user.getId());
+				resultIntent.putExtra("id", userId);
 
 				// returning data
 				setResult(RESULT_OK, resultIntent);

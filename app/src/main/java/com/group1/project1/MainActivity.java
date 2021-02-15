@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
 	public static final int ACCOUNT_REQUEST_CODE = 1;
 
-	private int userId = -1;
+	private long userId = -1;
 
 	private AppDatabase db;
 
@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		// this is easier than dealing with versioning the db for now
+		deleteDatabase("db-proj1");
 
 		// logging into account
 		// safeguards against if we happen to start the activity while already logged in
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 			switch (requestCode) {
 
 			case ACCOUNT_REQUEST_CODE:
-				int id = data.getIntExtra("id", -1);
+				long id = data.getLongExtra("id", -1);
 				if (id == -1) {
 					Log.i("MainActivity", "Invalid account info!!!");
 					return;
