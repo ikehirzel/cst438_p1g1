@@ -76,7 +76,7 @@ public class AccountActivity extends AppCompatActivity {
 					return;
 				}
 
-				int[] pokemon = user.getPokemonList();
+				String[] pokemon = user.getPokemonList();
 				String list = new String();
 				for (int i = 0; i < pokemon.length; i++) {
 					if (i > 0) list += ", ";
@@ -108,7 +108,7 @@ public class AccountActivity extends AppCompatActivity {
 				}
 
 				Toast.makeText(view.getContext(), "Successfully created user: " + username, Toast.LENGTH_SHORT).show();
-				User user = new User(username, password, null, null);
+				User user = new User(username, password);
 				long userId =  db.getUserDao().insert(user);
 				Log.i("AccountActivity", "Created user with id: " + userId);
 

@@ -22,19 +22,23 @@ public class User {
 	private String password;
 	private String berries;
 	private String pokemon;
+	private long catches;
 
-	public User(String username, String password, String berries, String pokemon) {
+	public User(String username, String password) {
 		this.username = username;
 		this.password = password;
-		this.berries = berries;
-		this.pokemon = pokemon;
-		if (this.berries == null) this.berries = "[]";
-		if (this.pokemon == null) this.pokemon = "[]";
+		this.catches = 0;
+		this.berries = "[]";
+		this.pokemon = "[]";
 	}
 
-	public long getId() { return id; }
+	public long getId() {
+		return id;
+	}
 
-	public void setId(long id) { this.id = id; }
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String getUsername() {
 		return username;
@@ -64,27 +68,38 @@ public class User {
 		return pokemon;
 	}
 
-	public void setPokemon(String pokemon) { this.pokemon = pokemon; }
-
-	public int[] getPokemonList() {
-		return new Gson().fromJson(pokemon, int[].class);
+	public void setPokemon(String pokemon) {
+		this.pokemon = pokemon;
 	}
 
-	public int[] getBerryList() {
-		return new Gson().fromJson(berries, int[].class);
+	public long getCatches() {
+		return catches;
 	}
 
-	public void addPokemon(int pokemonId) {
+	public void setCatches(long catches) {
+		this.catches = catches;
+	}
+
+	public String[] getPokemonList() {
+		return new Gson().fromJson(pokemon, String[].class);
+	}
+
+	public String[] getBerryList() {
+		return new Gson().fromJson(berries, String[].class);
+	}
+
+	public void addPokemon(String name) {
 		Gson gson = new Gson();
 		JsonArray arr = gson.fromJson(pokemon, JsonArray.class);
-		arr.add(pokemonId);
+		arr.add(name);
+		catches++;
 		pokemon = gson.toJson(arr);
 	}
 
-	public void addBerry(int berryId) {
+	public void addBerry(String name) {
 		Gson gson = new Gson();
 		JsonArray arr = gson.fromJson(berries, JsonArray.class);
-		arr.add(berryId);
+		arr.add(name);
 		berries = gson.toJson(arr);
 	}
 }

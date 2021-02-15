@@ -9,6 +9,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface PokeApi {
+	public static final String POKEMON_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 	@GET("pokemon/{id}")
 	Call<JsonObject> getPokemon(@Path("id") int id);
 	@GET("pokemon-species/{id}")
