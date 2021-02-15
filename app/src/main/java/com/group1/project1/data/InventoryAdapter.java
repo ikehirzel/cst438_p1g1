@@ -13,8 +13,6 @@ import com.group1.project1.R;
 
 public class InventoryAdapter extends RecyclerView.Adapter<InventoryAdapter.ViewHolder> {
 
-	public interface InventoryClickListener
-
 	private String[] list;
 	private boolean isPokemon;
 	public InventoryAdapter(String[] list, boolean isPokemon) {
