@@ -12,8 +12,10 @@ public interface PokeApi {
 	public static final String POKEMON_SPRITE_URL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/";
 	@GET("pokemon/{id}")
 	Call<JsonObject> getPokemon(@Path("id") int id);
-	@GET("pokemon-species/{id}")
-	Call<JsonObject> getSpecies(@Path("id") int id);
+	@GET("pokemon-species/{name}")
+	Call<JsonObject> getSpecies(@Path("name") String name);
 	@GET("berry/{id}")
 	Call<JsonObject> getBerry(@Path("id") int id);
+	@GET("berry/{name}")
+	Call<JsonObject> getBerry(@Path("name") String name);
 }

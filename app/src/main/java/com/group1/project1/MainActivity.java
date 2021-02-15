@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		// this is easier than dealing with versioning the db for now
-		deleteDatabase("db-proj1");
+		// deleteDatabase("db-proj1");
 
 		// logging into account
 		// safeguards against if we happen to start the activity while already logged in

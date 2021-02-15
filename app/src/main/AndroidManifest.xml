@@ -21,6 +21,7 @@
         <activity android:name=".AccountActivity" />
         <activity android:name=".InventoryActivity" />
 		<activity android:name=".GachaActivity" />
+		<activity android:name=".InfoActivity" />
     </application>
 
 </manifest>
