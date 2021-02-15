@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
 		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
 			.allowMainThreadQueries().build();
 
-		// TODO set greetingView to say "Hello <username>"
-
 		// if the user pressed the catch pokemon button
 		catchButton.setOnClickListener(new View.OnClickListener() {
 
@@ -114,13 +112,15 @@ public class MainActivity extends AppCompatActivity {
 
 			case ACCOUNT_REQUEST_CODE:
 				long id = data.getLongExtra("id", -1);
-				if (id == -1) {
+				if (id < 1) {
 					Log.i("MainActivity", "Invalid account info!!!");
 					return;
 				}
 
 				Log.i("MainActivity", "Got id: " + id);
 				userId = id;
+				greetingView.setText("Hello, " + db.getUserDao().getUser(userId).getUsername());
+
 				break;
 			}
 		}

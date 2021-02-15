@@ -76,6 +76,15 @@ public class AccountActivity extends AppCompatActivity {
 					return;
 				}
 
+				int[] pokemon = user.getPokemonList();
+				String list = new String();
+				for (int i = 0; i < pokemon.length; i++) {
+					if (i > 0) list += ", ";
+					list += pokemon[i];
+				}
+
+				Log.i("AccountActivity", "Current pokemon: " + list);
+
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("id", user.getId());

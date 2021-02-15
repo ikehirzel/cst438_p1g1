@@ -17,7 +17,7 @@ public class User {
 
 	// Username and Password Information
 	@PrimaryKey(autoGenerate = true)
-	private int id;
+	private long id;
 	private String username;
 	private String password;
 	private String berries;
@@ -32,9 +32,9 @@ public class User {
 		if (this.pokemon == null) this.pokemon = "[]";
 	}
 
-	public int getId() { return id; }
+	public long getId() { return id; }
 
-	public void setId(int id) { this.id = id; }
+	public void setId(long id) { this.id = id; }
 
 	public String getUsername() {
 		return username;
