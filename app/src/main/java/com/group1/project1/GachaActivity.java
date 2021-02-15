@@ -14,6 +14,8 @@ import androidx.room.Room;
 
 import com.google.gson.JsonObject;
 import com.group1.project1.api.PokeApi;
+import com.group1.project1.dao.UserDao;
+import com.group1.project1.data.User;
 
 import java.net.URL;
 import java.util.Random;
@@ -61,13 +63,11 @@ imageView.setImageBitmap(bmp);*/
 		}.start();
 	}
 
-	private void handleCatch(int userId) {
+	private void handleCatch(long userId) {
 		Random rng = new Random();
-
-
-		int id = rng.nextInt(800);
-		Log.i("GachaActivity", "Getting data for pokemon: " + id);
-		Call<JsonObject> pokemonCall = api.getPokemon(id);
+		int pokemonId = rng.nextInt(800);
+		Log.i("GachaActivity", "Getting data for pokemon: " + pokemonId);
+		Call<JsonObject> pokemonCall = api.getPokemon(pokemonId);
 		pokemonCall.enqueue(new Callback<JsonObject>() {
 			@Override
 			public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -78,6 +78,14 @@ imageView.setImageBitmap(bmp);*/
 				Log.i("GachaActivity", "Poke url: " + spriteUrl);
 				updateImage(spriteUrl, pokemonImg);
 				msgView.setText("You got " + name);
+
+				//Log.i("GachaActivity", "");
+				Log.i("GachaActivity", "Adding pokemon " + pokemonId + " to user: " + userId);
+				UserDao dao = db.getUserDao();
+				User user = dao.getUser(userId);
+				user.addPokemon(pokemonId);
+				dao.update(user);
+				Log.i("GachaActivity", "User pokemon: " + user.getPokemon());
 			}
 
 			@Override
@@ -92,10 +100,12 @@ imageView.setImageBitmap(bmp);*/
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gacha);
 
-		int userId = getIntent().getExtras().getInt("id", -1);
+		long userId = getIntent().getExtras().getLong("id", -1);
 		if (userId == -1) {
 			finish();
 		}
+
+		Log.i("GachaActivity", "Starting for user: " + userId);
 
 		msgView = findViewById(R.id.gacha_msg_view);
 		confirmButton = findViewById(R.id.gacha_confirm_button);
@@ -117,6 +127,7 @@ imageView.setImageBitmap(bmp);*/
 
 			public void onClick(View view) {
 				Log.i("GachaActivity", "Hit confirm button");
+				finish();
 			}
 		});
 

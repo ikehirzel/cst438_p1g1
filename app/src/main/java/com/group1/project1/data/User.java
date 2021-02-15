@@ -1,5 +1,8 @@
 package com.group1.project1.data;
 
+import android.util.Log;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -15,30 +18,23 @@ public class User {
 	// Username and Password Information
 	@PrimaryKey(autoGenerate = true)
 	private int id;
-	private String username = null;
-	private String password = null;
-	private String berries = null;
-	private String pokemon = null;
+	private String username;
+	private String password;
+	private String berries;
+	private String pokemon;
 
-	// Constructor
-	public User(int id, String username, String password, String berries, String pokemon) {
-		this.id = id;
+	public User(String username, String password, String berries, String pokemon) {
 		this.username = username;
 		this.password = password;
 		this.berries = berries;
 		this.pokemon = pokemon;
+		if (this.berries == null) this.berries = "[]";
+		if (this.pokemon == null) this.pokemon = "[]";
 	}
 
-	public User() {
-	}
+	public int getId() { return id; }
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
+	public void setId(int id) { this.id = id; }
 
 	public String getUsername() {
 		return username;
@@ -70,17 +66,25 @@ public class User {
 
 	public void setPokemon(String pokemon) { this.pokemon = pokemon; }
 
+	public int[] getPokemonList() {
+		return new Gson().fromJson(pokemon, int[].class);
+	}
+
+	public int[] getBerryList() {
+		return new Gson().fromJson(berries, int[].class);
+	}
+
 	public void addPokemon(int pokemonId) {
 		Gson gson = new Gson();
-		JsonArray arr = gson.fromJson(pokemon, JsonObject.class).getAsJsonArray();
+		JsonArray arr = gson.fromJson(pokemon, JsonArray.class);
 		arr.add(pokemonId);
-		pokemon = arr.toString();
+		pokemon = gson.toJson(arr);
 	}
 
 	public void addBerry(int berryId) {
 		Gson gson = new Gson();
-		JsonArray arr = gson.fromJson(berries, JsonObject.class).getAsJsonArray();
+		JsonArray arr = gson.fromJson(berries, JsonArray.class);
 		arr.add(berryId);
-		berries = arr.toString();
+		berries = gson.toJson(arr);
 	}
 }
