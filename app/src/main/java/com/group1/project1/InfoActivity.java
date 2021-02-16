@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.group1.project1.api.PokeApi;
 
@@ -36,24 +37,51 @@ public class InfoActivity extends AppCompatActivity {
 
 		new Thread() {
 			@Override public void run() {
-				Call<JsonObject> call =  api.getBerry(name);
-				String desc = new String();
+				Call<JsonObject> call =  api.getItem(name);
 				try {
 					JsonObject res = call.execute().body();
 					if (res == null) {
 						Log.e("InfoActivity", "Res was not received");
 						return;
 					}
-					desc += "Size: " + res.get("size").getAsString();
-					desc += "\n\nSmoothness: " + res.get("smoothness").getAsString();
-					desc += "\n\nGrowth Time: " + res.get("growth_time").getAsString();
-					desc += "\n\nMax Harvest: " + res.get("max_harvest").getAsString();
 
-					final String description = desc;
+					String description = new String();
+
+					JsonArray effectEntries = res.get("effect_entries").getAsJsonArray();
+					for (JsonElement elem : effectEntries) {
+						JsonObject entry = elem.getAsJsonObject();
+						String lang = entry.get("language").getAsJsonObject().get("name").getAsString();
+
+						if (lang.equals("en")) {
+							description += entry.get("effect").getAsString() + "\n\n";
+							break;
+						}
+					}
+
+					JsonArray flavorEntries = res.get("flavor_text_entries").getAsJsonArray();
+					for (JsonElement elem : flavorEntries) {
+						JsonObject entry = elem.getAsJsonObject();
+						String lang = entry.get("language").getAsJsonObject().get("name").getAsString();
+
+						if (lang.equals("en")) {
+							description += entry.get("text").getAsString();
+							break;
+						}
+					}
+
+					if (description.isEmpty()) {
+						description = "No description available";
+					}
+
+					final String desc = description;
+
+					URL url = new URL(PokeApi.BERRY_SPRITE_URL + name + ".png");
+					final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
 					runOnUiThread(new Runnable() {
 						@Override public void run() {
-							descriptionText.setText(description);
+							descriptionText.setText(desc);
+							image.setImageBitmap(bmp);
 						}
 					});
 
@@ -81,40 +109,39 @@ public class InfoActivity extends AppCompatActivity {
 					}
 
 					if (res.get("is_legendary").getAsBoolean()) {
-						description += "Legendary Pokemon\n";
+						description += "Legendary Pokemon\n\n";
 					}
 					else if (res.get("is_mythical").getAsBoolean()) {
-						description += "Mythical Pokemon\n";
+						description += "Mythical Pokemon\n\n";
 					}
 					else if (res.get("is_baby").getAsBoolean()) {
-						description += "Baby Pokemon\n";
+						description += "Baby Pokemon\n\n";
 					}
 					else {
-						description += "Normal Pokemon\n";
+						description += "Normal Pokemon\n\n";
 					}
 
 					JsonArray flavorEntries = res.get("flavor_text_entries").getAsJsonArray();
 					String flavorText = null;
 
-					for (int i = 0; i < flavorEntries.size(); i++) {
-						JsonObject entry = flavorEntries.get(i).getAsJsonObject();
+					boolean found = false;
+
+					for (JsonElement elem : flavorEntries) {
+						JsonObject entry = elem.getAsJsonObject();
 						String lang = entry.get("language").getAsJsonObject().get("name").getAsString();
 
 						if (lang.equals("en")) {
-
-							flavorText = entry.get("flavor_text").getAsString();
+							description += entry.get("flavor_text").getAsString();
+							found = true;
 							break;
 						}
 					}
 
-					if (flavorText == null) {
+					if (!found) {
 						description += "No Description available";
-					} else {
-						description += '\n' + flavorText;
 					}
 
 					URL url = new URL(PokeApi.POKEMON_SPRITE_URL + res.get("id").getAsInt() + ".png");
-
 					final String desc = description;
 					final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 
@@ -148,7 +175,7 @@ public class InfoActivity extends AppCompatActivity {
 		nameText.setText(name);
 
 		Retrofit retrofit = new Retrofit.Builder()
-				.baseUrl("https://pokeapi.co/api/v2/")
+				.baseUrl(PokeApi.BASE_URL)
 				.addConverterFactory(GsonConverterFactory.create())
 				.build();
 

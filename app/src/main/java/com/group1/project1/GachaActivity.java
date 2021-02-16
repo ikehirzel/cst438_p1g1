@@ -48,7 +48,7 @@ public class GachaActivity extends AppCompatActivity {
 					pokemonImg.setImageBitmap(bmp);
 					String msg = "You got " + pokeName;
 					if (berryName != null) {
-						msg += " and " + berryName + " berry";
+						msg += " and " + berryName;
 					}
 					msgView.setText(msg);
 				}
@@ -72,7 +72,7 @@ public class GachaActivity extends AppCompatActivity {
 
 	private String getBerryName(int id) throws IOException {
 		Call<JsonObject> call = api.getBerry(id);
-		JsonObject res = call.execute().body();
+		JsonObject res = call.execute().body().get("item").getAsJsonObject();
 		return res.get("name").getAsString();
 	}
 
@@ -132,7 +132,7 @@ public class GachaActivity extends AppCompatActivity {
 			.allowMainThreadQueries().build();
 
 		Retrofit retrofit = new Retrofit.Builder()
-			.baseUrl("https://pokeapi.co/api/v2/")
+			.baseUrl(PokeApi.BASE_URL)
 			.addConverterFactory(GsonConverterFactory.create())
 			.build();
 

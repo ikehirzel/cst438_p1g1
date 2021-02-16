@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Entity(tableName="user")
 public class User {
@@ -101,5 +102,23 @@ public class User {
 		JsonArray arr = gson.fromJson(berries, JsonArray.class);
 		arr.add(name);
 		berries = gson.toJson(arr);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		User user = (User) o;
+		return id == user.id &&
+				catches == user.catches &&
+				username.equals(user.username) &&
+				password.equals(user.password) &&
+				berries.equals(user.berries) &&
+				pokemon.equals(user.pokemon);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, username, password, berries, pokemon, catches);
 	}
 }
