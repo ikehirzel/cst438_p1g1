@@ -24,10 +24,6 @@ public class PokeApiTest {
 
 	@Test
 	public void speciesEndpointTest() {
-		// Context of the app under test.
-		Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-		//assertEquals("com.group1.project1", appContext.getPackageName());
-
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(PokeApi.BASE_URL)
 				.addConverterFactory(GsonConverterFactory.create())

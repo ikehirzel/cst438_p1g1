@@ -25,9 +25,7 @@ public class InventoryActivity extends AppCompatActivity {
 
 		inventoryRecycler = findViewById(R.id.inventory_recycler);
 
-
-		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
-			.allowMainThreadQueries().build();
+		db = AppDatabase.create(this);
 
 		Intent intent = getIntent();
 		long userId = intent.getLongExtra("id", -1);

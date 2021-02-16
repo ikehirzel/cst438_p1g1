@@ -128,8 +128,7 @@ public class GachaActivity extends AppCompatActivity {
 		pokemonImg = findViewById(R.id.gacha_pokemon_img);
 		berryImg = findViewById(R.id.gacha_berry_img);
 
-		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
-			.allowMainThreadQueries().build();
+		db = AppDatabase.create(this);
 
 		Retrofit retrofit = new Retrofit.Builder()
 			.baseUrl(PokeApi.BASE_URL)
