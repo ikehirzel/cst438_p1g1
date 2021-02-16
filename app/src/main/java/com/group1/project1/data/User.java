@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.google.gson.Gson;
@@ -13,7 +14,7 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Entity(tableName="user")
+@Entity(tableName="user", indices = {@Index(value = {"username"}, unique = true)})
 public class User {
 
 	// Username and Password Information
@@ -109,7 +110,7 @@ public class User {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		User user = (User) o;
-		return id == user.id &&
+		return 	id == user.id &&
 				catches == user.catches &&
 				username.equals(user.username) &&
 				password.equals(user.password) &&

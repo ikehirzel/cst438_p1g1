@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		// this is easier than dealing with versioning the db for now
-		// deleteDatabase("db-proj1");
+		// deleteDatabase(AppDatabase.DB_NAME);
 
 		// logging into account
 		// safeguards against if we happen to start the activity while already logged in
@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
 		deleteButton = findViewById(R.id.delete_account_button);
 		logoutButton = findViewById(R.id.logout_button);
 
-		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
-			.allowMainThreadQueries().build();
+		db = AppDatabase.create(this);
 
 		// if the user pressed the catch pokemon button
 		catchButton.setOnClickListener(new View.OnClickListener() {

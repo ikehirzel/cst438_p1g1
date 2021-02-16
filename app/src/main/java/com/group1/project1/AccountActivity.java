@@ -53,9 +53,7 @@ public class AccountActivity extends AppCompatActivity {
 		usernameEdit = findViewById(R.id.username_edit);
 		passwordEdit = findViewById(R.id.password_edit);
 
-		db = Room.databaseBuilder(this, AppDatabase.class, "db-proj1")
-				.allowMainThreadQueries()   //Allows room to do operation on main thread
-				.build();
+		db = AppDatabase.create(this);
 
 		// setting button listeners
 		loginButton.setOnClickListener(new View.OnClickListener() {
