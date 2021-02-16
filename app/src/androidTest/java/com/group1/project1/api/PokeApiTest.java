@@ -23,10 +23,10 @@ import static org.junit.Assert.assertNotEquals;
 public class PokeApiTest {
 
 	@Test
-	public void useAppContext() {
+	public void speciesEndpointTest() {
 		// Context of the app under test.
 		Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-		assertEquals("com.group1.project1", appContext.getPackageName());
+		//assertEquals("com.group1.project1", appContext.getPackageName());
 
 		Retrofit retrofit = new Retrofit.Builder()
 				.baseUrl(PokeApi.BASE_URL)
@@ -36,7 +36,8 @@ public class PokeApiTest {
 		PokeApi api = retrofit.create(PokeApi.class);
 		// Testing species api call
 		new Thread() {
-			@Override public void run() {
+			@Override
+			public void run() {
 				try {
 					// Creating species call
 					Call<JsonObject> call = api.getSpecies("ditto");
@@ -48,18 +49,94 @@ public class PokeApiTest {
 					assertEquals(res.get("id").getAsInt(), 132);
 					assertEquals(res.get("is_legendary").getAsBoolean(), false);
 
-					// Creating pokemon call
-					call = api.getPokemon(132);
-					res = call.execute().body();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	@Test
+	public void pokemonEndpointTest() {
+		Retrofit retrofit = new Retrofit.Builder()
+				.baseUrl(PokeApi.BASE_URL)
+				.addConverterFactory(GsonConverterFactory.create())
+				.build();
+
+		PokeApi api = retrofit.create(PokeApi.class);
+		// Testing species api call
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					// Creating species call
+					Call<JsonObject> call = api.getPokemon(132);
+					JsonObject res = call.execute().body();
 
 					// Pokemon assertions
 					assertNotEquals(res, null);
 					assertEquals(res.get("name").getAsString(), "ditto");
-					assertEquals(res.get("id").getAsString(), 132);
+					assertEquals(res.get("id").getAsInt(), 132);
 					assertEquals(res.get("weight").getAsInt(), 40);
 
-					// Creating berry call
-					call = api.getBerry(16);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	@Test
+	public void berryEndpointTest() {
+		Retrofit retrofit = new Retrofit.Builder()
+				.baseUrl(PokeApi.BASE_URL)
+				.addConverterFactory(GsonConverterFactory.create())
+				.build();
+
+		PokeApi api = retrofit.create(PokeApi.class);
+		// Testing species api call
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					// Creating species call
+					Call<JsonObject> call = api.getBerry(16);
+					JsonObject res = call.execute().body();
+
+					// Berry assertions
+					assertNotEquals(res, null);
+					assertEquals(res.get("name").getAsString(), "razz");
+					assertEquals(res.get("item").getAsJsonObject().get("name").getAsString(), "razz-berry");
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+
+	@Test
+	public void itemEndpointTest() {
+
+		Retrofit retrofit = new Retrofit.Builder()
+				.baseUrl(PokeApi.BASE_URL)
+				.addConverterFactory(GsonConverterFactory.create())
+				.build();
+
+		PokeApi api = retrofit.create(PokeApi.class);
+		// Testing species api call
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					// Creating species call
+					Call<JsonObject> call = api.getItem("razz-berry");
+					JsonObject res = call.execute().body();
+
+					// Item assertions
+					assertNotEquals(res, null);
+					assertEquals(res.get("id").getAsInt(), 141);
+					assertEquals(res.get("cost").getAsInt(), 20);
 
 				} catch (IOException e) {
 					e.printStackTrace();
