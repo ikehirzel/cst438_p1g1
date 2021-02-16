@@ -39,6 +39,8 @@ public class UserDaoTest {
 		retUser = dao.getUser(testUsername);
 		assertNotEquals(retUser, null);
 		assertEquals(user, retUser);
+		assertNotEquals(dao.getUsers().size(), 0);
+		dao.delete(user);
 	}
 
 	@Test
