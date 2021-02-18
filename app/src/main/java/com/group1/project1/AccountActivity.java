@@ -13,6 +13,10 @@ import androidx.room.Room;
 
 import com.group1.project1.data.User;
 
+/**
+ * Activity that allows the user to login
+ * @author Ike Hirzel
+ */
 public class AccountActivity extends AppCompatActivity {
 
 	private EditText usernameEdit;
@@ -23,6 +27,14 @@ public class AccountActivity extends AppCompatActivity {
 
 	private AppDatabase db;
 
+	/**
+	 * Checks if a user with username @username exists and verifies that @password is the correct
+	 * password
+	 *
+	 * @param username	Username of the user
+	 * @param password	Password of the user
+	 * @return	a boolean that is true if the user exists, false if it does not
+	 */
 	private boolean verifyCredentials(String username, String password) {
 
 		boolean valid = true;
@@ -42,8 +54,11 @@ public class AccountActivity extends AppCompatActivity {
 		return valid;
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	/**
+	 * Binds UI elements and sets button listeners
+	 * @param savedInstanceState
+	 */
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_account);
 
@@ -62,7 +77,7 @@ public class AccountActivity extends AppCompatActivity {
 				String password = passwordEdit.getText().toString();
 				if (!verifyCredentials(username, password)) return;
 
-
+				// gets user from db
 				User user = db.getUserDao().getUser(username);
 
 				if (user == null) {
@@ -74,15 +89,6 @@ public class AccountActivity extends AppCompatActivity {
 					return;
 				}
 
-				String[] pokemon = user.getPokemonList();
-				String list = new String();
-				for (int i = 0; i < pokemon.length; i++) {
-					if (i > 0) list += ", ";
-					list += pokemon[i];
-				}
-
-				Log.i("AccountActivity", "Current pokemon: " + list);
-
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("id", user.getId());
@@ -93,21 +99,28 @@ public class AccountActivity extends AppCompatActivity {
 			}
 		});
 
+		// Adds user to the database
 		createAccountButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
+				//gets credentials from EditTexts
 				String username = usernameEdit.getText().toString();
 				String password = passwordEdit.getText().toString();
 
+				// checks if the credentials are OK
 				if (!verifyCredentials(username, password)) return;
+
 				if (db.getUserDao().getUser(username) != null) {
 					usernameEdit.setError("User '" + username + "' already exists");
 					return;
 				}
 
-				Toast.makeText(view.getContext(), "Successfully created user: " + username, Toast.LENGTH_SHORT).show();
+				// creates new user
 				User user = new User(username, password);
+				// adds user to db
 				long userId =  db.getUserDao().insert(user);
+				// Confirms to the user that the user was created
+				Toast.makeText(view.getContext(), "Successfully created user: " + username, Toast.LENGTH_SHORT).show();
 				Log.i("AccountActivity", "Created user with id: " + userId);
 
 				// loading credentials into intent to be returned

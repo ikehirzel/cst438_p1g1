@@ -13,6 +13,10 @@ import android.widget.TextView;
 import com.group1.project1.dao.UserDao;
 import com.group1.project1.data.User;
 
+/**
+ * Main activity that acts a landing page for the app
+ * @author Ike Hirzel
+ */
 public class MainActivity extends AppCompatActivity {
 
 	public static final int ACCOUNT_REQUEST_CODE = 1;
@@ -28,13 +32,14 @@ public class MainActivity extends AppCompatActivity {
 	private Button logoutButton;
 	private Button deleteButton;
 
+	/**
+	 * Binds all the UI elements and adds button listeners to all the buttons
+	 * @param savedInstanceState
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		// this is easier than dealing with versioning the db for now
-//		deleteDatabase(AppDatabase.DB_NAME);
 
 		// logging into account
 		// safeguards against if we happen to start the activity while already logged in
@@ -66,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		// brings user to list of pokemon in inventory
 		pokemonButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
@@ -73,13 +79,14 @@ public class MainActivity extends AppCompatActivity {
 				if (userId < 1) return;
 				Log.i("MainActivity", "Checking pokemon for user: " + userId);
 				Intent intent = new Intent(view.getContext(), InventoryActivity.class);
-				// pass in user id so we can see inventory
+				// pass in current user's id
 				intent.putExtra("id", userId);
 				intent.putExtra("pokemon", true);
 				startActivity(intent);
 			}
 		});
 
+		// brings user to list of berries in inventory
 		berriesButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
@@ -94,30 +101,48 @@ public class MainActivity extends AppCompatActivity {
 			}
 		});
 
+		// logs out the user
 		logoutButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
 				Log.i("MainActivity", "Logging out user: " + userId);
+				// set current id to an invalid one
 				userId = -1;
+				// log the user in
 				startActivityForResult(new Intent(view.getContext(), AccountActivity.class), ACCOUNT_REQUEST_CODE);
 			}
 		});
 
+		// Deletes the account from the database
 		deleteButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View view) {
 				if (userId < 1) return;
-				// TODO Implement this function
+
+				// getting user with corresponding id
 				UserDao dao = db.getUserDao();
 				User user = dao.getUser(userId);
+
+				// if no such user exists, do nothing
 				if (user == null) return;
+
+				// remove user from database
 				Log.i("MainActivity", "Deleting user '" + user.getUsername() + "'");
 				dao.delete(user);
+
+				// log user in
 				startActivityForResult(new Intent(view.getContext(), AccountActivity.class), ACCOUNT_REQUEST_CODE);
 			}
 		});
 	}
 
+	/**
+	 * Activated upon result from a started activity. In the common use case, sets the account id
+	 * for the logged in user
+	 * @param requestCode	The code sent to the activity requesting a result from
+	 * @param resultCode	The code sent back from the activity
+	 * @param data			The intent passed back from the activity
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -133,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 					return;
 				}
 
+				// set user id to the corresponding log in
 				Log.i("MainActivity", "Got id: " + id);
 				userId = id;
 				greetingView.setText("Hello, " + db.getUserDao().getUser(userId).getUsername());

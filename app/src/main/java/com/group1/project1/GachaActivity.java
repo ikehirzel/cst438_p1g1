@@ -29,53 +29,83 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Url;
 
+/**
+ * Activity that randomly selects a pokemon to add to the user inventory
+ * @author Ike Hirzel
+ */
 public class GachaActivity extends AppCompatActivity {
 
 	private TextView msgView;
-	private Button confirmButton;
 	private ImageView pokemonImg;
 	private ImageView berryImg;
 
 	private AppDatabase db;
 	private PokeApi api;
 
-	private void updateUi(int pokemonId, String pokeName, String berryName) {
-		try {
-			URL url = new URL(PokeApi.POKEMON_SPRITE_URL + pokemonId + ".png");
-			final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-			runOnUiThread(new Runnable() {
-				public void run() {
-					pokemonImg.setImageBitmap(bmp);
-					String msg = "You got " + pokeName;
-					if (berryName != null) {
-						msg += " and " + berryName;
-					}
-					msgView.setText(msg);
+	/**
+	 *
+	 * @param pokemonInfo	The name and picture of the desired selected pokemon
+	 * @param berryInfo		The name and picture of the desired berry
+	 */
+	private void updateUi(Pair<String, Bitmap> pokemonInfo, Pair<String, Bitmap> berryInfo) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				pokemonImg.setImageBitmap(pokemonInfo.second);
+				String msg = "You got " + pokemonInfo.first;
+				if (berryInfo != null) {
+					msg += " and " + berryInfo.first;
+					berryImg.setImageBitmap(berryInfo.second);
 				}
-			});
-
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+				msgView.setText(msg);
+			}
+		});
 	}
 
+	/**
+	 * Takes in an id and fetches the data corresponding to the desired pokemon
+	 *
+	 * @param id	Id corresponding to the pokemon
+	 * @return		A pair containing the name and picture of the pokemon
+	 * @throws IOException
+	 */
 	private Pair<String, Bitmap> getPokemonInfo(int id) throws IOException {
+
 		Call<JsonObject> call = api.getPokemon(id);
 		JsonObject res = call.execute().body();
 		JsonObject species = res.get("species").getAsJsonObject();
 		String name = species.get("name").getAsString();
+
 		URL url = new URL(PokeApi.POKEMON_SPRITE_URL + id + ".png");
 		Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
 		return new Pair(name, bmp);
 	}
 
-	private String getBerryName(int id) throws IOException {
+	/**
+	 * Takes in an id and fetches the data corresponding to the desired berry
+	 *
+	 * @param id	Id corresponding to the berry
+	 * @return		A pair containing the name and picture of the berry
+	 * @throws IOException
+	 */
+	private Pair<String, Bitmap> getBerryInfo(int id) throws IOException {
+
 		Call<JsonObject> call = api.getBerry(id);
 		JsonObject res = call.execute().body().get("item").getAsJsonObject();
-		return res.get("name").getAsString();
+		String name = res.get("name").getAsString();
+
+		URL url = new URL(PokeApi.BERRY_SPRITE_URL + name + ".png");
+		Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+		return new Pair(name, bmp);
 	}
 
+	/**
+	 * Generates a random id for a pokemon and adds info for the pokemon to the inventory. If the
+	 * amount of catches the user has done is a multiple of three, an id for a berry will also be
+	 * generated and added to the id
+	 * @param userId	Id corresponding to the signed in user
+	 */
 	private void handleCatch(long userId) {
 
 		Random rng = new Random();
@@ -91,18 +121,18 @@ public class GachaActivity extends AppCompatActivity {
 					Pair<String, Bitmap> pokemonInfo = getPokemonInfo(pokemonId);
 					user.addPokemon(pokemonInfo.first);
 					Log.i("GachaActivity", "Adding pokemon '" + pokemonInfo.first + "' to user: " + userId);
-					String berryName = null;
+					Pair<String, Bitmap> berryInfo = null;
 
 					if (user.getCatches() % 3 == 0) {
 
-						berryName = getBerryName(berryId);
-						user.addBerry(berryName);
+						berryInfo = getBerryInfo(berryId);
+						user.addBerry(berryInfo.first);
 					}
 
 					dao.update(user);
 					Log.i("GachaActivity", "User Pokemon: " + user.getPokemon());
-
-					updateUi(pokemonId, pokemonInfo.first, berryName);
+					Log.i("GachaActivity", "User berries: " + user.getBerries());
+					updateUi(pokemonInfo, berryInfo);
 				}
 				catch (IOException e) {
 					e.printStackTrace();
@@ -111,8 +141,12 @@ public class GachaActivity extends AppCompatActivity {
 		}.start();
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	/**
+	 * Binds the UI elements, adds a listener to the confirm button and immediately handles the
+	 * pokemon catch.
+	 * @param savedInstanceState
+	 */
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gacha);
 
@@ -124,7 +158,6 @@ public class GachaActivity extends AppCompatActivity {
 		Log.i("GachaActivity", "Starting for user: " + userId);
 
 		msgView = findViewById(R.id.gacha_msg_view);
-		confirmButton = findViewById(R.id.gacha_confirm_button);
 		pokemonImg = findViewById(R.id.gacha_pokemon_img);
 		berryImg = findViewById(R.id.gacha_berry_img);
 
@@ -136,13 +169,6 @@ public class GachaActivity extends AppCompatActivity {
 			.build();
 
 		api = retrofit.create(PokeApi.class);
-
-		// if the user pressed the catch pokemon button
-		confirmButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				finish();
-			}
-		});
 
 		handleCatch(userId);
 	}

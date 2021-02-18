@@ -23,6 +23,10 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Activity that displays info of a specific inventory item
+ * @author Ike Hirzel
+ */
 public class InfoActivity extends AppCompatActivity {
 
 	private TextView nameText;
@@ -31,6 +35,12 @@ public class InfoActivity extends AppCompatActivity {
 
 	PokeApi api;
 
+	/**
+	 * Updated the UI by getting data about the berry corresponding to @name. This
+	 * function does not return and asynchronously handles the network call and UI
+	 * update.
+	 * @param name	Name of the desired berry
+	 */
 	public void updateBerryInfo(String name) {
 
 		Log.i("InfoActivity", "Updating berry info: " + name);
@@ -58,17 +68,6 @@ public class InfoActivity extends AppCompatActivity {
 						}
 					}
 
-					JsonArray flavorEntries = res.get("flavor_text_entries").getAsJsonArray();
-					for (JsonElement elem : flavorEntries) {
-						JsonObject entry = elem.getAsJsonObject();
-						String lang = entry.get("language").getAsJsonObject().get("name").getAsString();
-
-						if (lang.equals("en")) {
-							description += entry.get("text").getAsString();
-							break;
-						}
-					}
-
 					if (description.isEmpty()) {
 						description = "No description available";
 					}
@@ -92,6 +91,12 @@ public class InfoActivity extends AppCompatActivity {
 		}.start();
 	}
 
+	/**
+	 * Updated the UI by getting data about the pokemon corresponding to @name. This
+	 * function does not return and asynchronously handles the network call and UI
+	 * update.
+	 * @param name	Name of the desired pokemon
+	 */
 	public void updatePokemonInfo(String name) {
 
 		Log.i("InfoActivity", "Updating pokemon info: " + name);
@@ -159,8 +164,12 @@ public class InfoActivity extends AppCompatActivity {
 		}.start();
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	/**
+	 * Binds all of the UI elements and updates them base on extras passed into
+	 * the intent.
+	 * @param savedInstanceState
+	 */
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_info);
 
@@ -187,6 +196,5 @@ public class InfoActivity extends AppCompatActivity {
 		else {
 			updateBerryInfo(name);
 		}
-
 	}
 }
