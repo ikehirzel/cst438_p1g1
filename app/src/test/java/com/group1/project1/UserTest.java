@@ -1,8 +1,8 @@
 package com.group1.project1;
 
-import junit.framework.TestCase;
+import com.group1.project1.data.User;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 
