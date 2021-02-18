@@ -29,16 +29,24 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.Url;
 
+/**
+ * Activity that randomly selects a pokemon to add to the user inventory
+ * @author Ike Hirzel
+ */
 public class GachaActivity extends AppCompatActivity {
 
 	private TextView msgView;
-	private Button confirmButton;
 	private ImageView pokemonImg;
 	private ImageView berryImg;
 
 	private AppDatabase db;
 	private PokeApi api;
 
+	/**
+	 *
+	 * @param pokemonInfo	The name and picture of the desired selected pokemon
+	 * @param berryInfo		The name and picture of the desired berry
+	 */
 	private void updateUi(Pair<String, Bitmap> pokemonInfo, Pair<String, Bitmap> berryInfo) {
 		runOnUiThread(new Runnable() {
 			public void run() {
@@ -53,6 +61,13 @@ public class GachaActivity extends AppCompatActivity {
 		});
 	}
 
+	/**
+	 * Takes in an id and fetches the data corresponding to the desired pokemon
+	 *
+	 * @param id	Id corresponding to the pokemon
+	 * @return		A pair containing the name and picture of the pokemon
+	 * @throws IOException
+	 */
 	private Pair<String, Bitmap> getPokemonInfo(int id) throws IOException {
 
 		Call<JsonObject> call = api.getPokemon(id);
@@ -66,6 +81,13 @@ public class GachaActivity extends AppCompatActivity {
 		return new Pair(name, bmp);
 	}
 
+	/**
+	 * Takes in an id and fetches the data corresponding to the desired berry
+	 *
+	 * @param id	Id corresponding to the berry
+	 * @return		A pair containing the name and picture of the berry
+	 * @throws IOException
+	 */
 	private Pair<String, Bitmap> getBerryInfo(int id) throws IOException {
 
 		Call<JsonObject> call = api.getBerry(id);
@@ -78,6 +100,12 @@ public class GachaActivity extends AppCompatActivity {
 		return new Pair(name, bmp);
 	}
 
+	/**
+	 * Generates a random id for a pokemon and adds info for the pokemon to the inventory. If the
+	 * amount of catches the user has done is a multiple of three, an id for a berry will also be
+	 * generated and added to the id
+	 * @param userId	Id corresponding to the signed in user
+	 */
 	private void handleCatch(long userId) {
 
 		Random rng = new Random();
@@ -113,8 +141,12 @@ public class GachaActivity extends AppCompatActivity {
 		}.start();
 	}
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	/**
+	 * Binds the UI elements, adds a listener to the confirm button and immediately handles the
+	 * pokemon catch.
+	 * @param savedInstanceState
+	 */
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_gacha);
 
@@ -126,7 +158,6 @@ public class GachaActivity extends AppCompatActivity {
 		Log.i("GachaActivity", "Starting for user: " + userId);
 
 		msgView = findViewById(R.id.gacha_msg_view);
-		confirmButton = findViewById(R.id.gacha_confirm_button);
 		pokemonImg = findViewById(R.id.gacha_pokemon_img);
 		berryImg = findViewById(R.id.gacha_berry_img);
 
@@ -138,13 +169,6 @@ public class GachaActivity extends AppCompatActivity {
 			.build();
 
 		api = retrofit.create(PokeApi.class);
-
-		// if the user pressed the catch pokemon button
-		confirmButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				finish();
-			}
-		});
 
 		handleCatch(userId);
 	}

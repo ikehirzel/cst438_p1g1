@@ -11,6 +11,10 @@ import androidx.room.Room;
 import com.group1.project1.data.InventoryAdapter;
 import com.group1.project1.data.User;
 
+/**
+ * Activity that displays list of inventory items
+ * @author Ike Hirzel
+ */
 public class InventoryActivity extends AppCompatActivity {
 
 	RecyclerView inventoryRecycler;
@@ -18,8 +22,13 @@ public class InventoryActivity extends AppCompatActivity {
 	RecyclerView.LayoutManager inventoryManager;
 	AppDatabase db;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	/**
+	 * Binds all of the UI elements and displays a list of all of the items currently
+	 * in the inventory. Whether this be pokemon or berries is decided by a boolean extra named
+	 * "pokemon"
+	 * @param savedInstanceState
+	 */
+	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_inventory);
 

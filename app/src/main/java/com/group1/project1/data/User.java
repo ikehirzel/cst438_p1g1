@@ -14,6 +14,10 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * Represents the data for an account
+ * @author Ike Hirzel
+ */
 @Entity(tableName="user", indices = {@Index(value = {"username"}, unique = true)})
 public class User {
 
@@ -22,10 +26,18 @@ public class User {
 	private long id;
 	private String username;
 	private String password;
+	// The inventory that holds the users berries
 	private String berries;
+	// The inventory that holds the users pokemon
 	private String pokemon;
+	// the amount of pokemon the user has caught
 	private long catches;
 
+	/**
+	 * Constructs new user with username and password as specified and empty inventory/ no catches
+	 * @param username	username of new user
+	 * @param password	password of new user
+	 */
 	public User(String username, String password) {
 		this.username = username;
 		this.password = password;
@@ -90,6 +102,10 @@ public class User {
 		return new Gson().fromJson(berries, String[].class);
 	}
 
+	/**
+	 * Converts pokemon to json object and adds pokemon's name
+	 * @param name	name of the pokemon
+	 */
 	public void addPokemon(String name) {
 		Gson gson = new Gson();
 		JsonArray arr = gson.fromJson(pokemon, JsonArray.class);
@@ -98,6 +114,10 @@ public class User {
 		pokemon = gson.toJson(arr);
 	}
 
+	/**
+	 * Converts pokemon to json object and adds berry's name
+	 * @param name	name of the berry
+	 */
 	public void addBerry(String name) {
 		Gson gson = new Gson();
 		JsonArray arr = gson.fromJson(berries, JsonArray.class);
@@ -105,8 +125,12 @@ public class User {
 		berries = gson.toJson(arr);
 	}
 
-	@Override
-	public boolean equals(Object o) {
+	/**
+	 * Checks to see if user is equivalent to an object
+	 * @param	o	object being compared to
+	 * @return	a boolean that represents if the object and user are equal
+	 */
+	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		User user = (User) o;
@@ -118,8 +142,11 @@ public class User {
 				pokemon.equals(user.pokemon);
 	}
 
-	@Override
-	public int hashCode() {
+	/**
+	 * Gets hashcode of user
+	 * @return hashcode of user
+	 */
+	@Override public int hashCode() {
 		return Objects.hash(id, username, password, berries, pokemon, catches);
 	}
 }
