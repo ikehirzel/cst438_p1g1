@@ -58,17 +58,6 @@ public class InfoActivity extends AppCompatActivity {
 						}
 					}
 
-					JsonArray flavorEntries = res.get("flavor_text_entries").getAsJsonArray();
-					for (JsonElement elem : flavorEntries) {
-						JsonObject entry = elem.getAsJsonObject();
-						String lang = entry.get("language").getAsJsonObject().get("name").getAsString();
-
-						if (lang.equals("en")) {
-							description += entry.get("text").getAsString();
-							break;
-						}
-					}
-
 					if (description.isEmpty()) {
 						description = "No description available";
 					}

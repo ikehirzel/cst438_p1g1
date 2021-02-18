@@ -39,41 +39,43 @@ public class GachaActivity extends AppCompatActivity {
 	private AppDatabase db;
 	private PokeApi api;
 
-	private void updateUi(int pokemonId, String pokeName, String berryName) {
-		try {
-			URL url = new URL(PokeApi.POKEMON_SPRITE_URL + pokemonId + ".png");
-			final Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-			runOnUiThread(new Runnable() {
-				public void run() {
-					pokemonImg.setImageBitmap(bmp);
-					String msg = "You got " + pokeName;
-					if (berryName != null) {
-						msg += " and " + berryName;
-					}
-					msgView.setText(msg);
+	private void updateUi(Pair<String, Bitmap> pokemonInfo, Pair<String, Bitmap> berryInfo) {
+		runOnUiThread(new Runnable() {
+			public void run() {
+				pokemonImg.setImageBitmap(pokemonInfo.second);
+				String msg = "You got " + pokemonInfo.first;
+				if (berryInfo != null) {
+					msg += " and " + berryInfo.first;
+					berryImg.setImageBitmap(berryInfo.second);
 				}
-			});
-
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+				msgView.setText(msg);
+			}
+		});
 	}
 
 	private Pair<String, Bitmap> getPokemonInfo(int id) throws IOException {
+
 		Call<JsonObject> call = api.getPokemon(id);
 		JsonObject res = call.execute().body();
 		JsonObject species = res.get("species").getAsJsonObject();
 		String name = species.get("name").getAsString();
+
 		URL url = new URL(PokeApi.POKEMON_SPRITE_URL + id + ".png");
 		Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
 		return new Pair(name, bmp);
 	}
 
-	private String getBerryName(int id) throws IOException {
+	private Pair<String, Bitmap> getBerryInfo(int id) throws IOException {
+
 		Call<JsonObject> call = api.getBerry(id);
 		JsonObject res = call.execute().body().get("item").getAsJsonObject();
-		return res.get("name").getAsString();
+		String name = res.get("name").getAsString();
+
+		URL url = new URL(PokeApi.BERRY_SPRITE_URL + name + ".png");
+		Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+
+		return new Pair(name, bmp);
 	}
 
 	private void handleCatch(long userId) {
@@ -91,18 +93,18 @@ public class GachaActivity extends AppCompatActivity {
 					Pair<String, Bitmap> pokemonInfo = getPokemonInfo(pokemonId);
 					user.addPokemon(pokemonInfo.first);
 					Log.i("GachaActivity", "Adding pokemon '" + pokemonInfo.first + "' to user: " + userId);
-					String berryName = null;
+					Pair<String, Bitmap> berryInfo = null;
 
 					if (user.getCatches() % 3 == 0) {
 
-						berryName = getBerryName(berryId);
-						user.addBerry(berryName);
+						berryInfo = getBerryInfo(berryId);
+						user.addBerry(berryInfo.first);
 					}
 
 					dao.update(user);
 					Log.i("GachaActivity", "User Pokemon: " + user.getPokemon());
-
-					updateUi(pokemonId, pokemonInfo.first, berryName);
+					Log.i("GachaActivity", "User berries: " + user.getBerries());
+					updateUi(pokemonInfo, berryInfo);
 				}
 				catch (IOException e) {
 					e.printStackTrace();
