@@ -88,7 +88,11 @@ public class AccountActivity extends AppCompatActivity {
 					passwordEdit.setError("Incorrect password");
 					return;
 				}
-
+				//opens different window if admin is true
+				if(user.getAdmin()){
+					Intent intent = new Intent(view.getContext(), AdminActivity.class);
+					startActivity(intent);
+				}
 				// loading credentials into intent to be returned
 				Intent resultIntent = new Intent();
 				resultIntent.putExtra("id", user.getId());
