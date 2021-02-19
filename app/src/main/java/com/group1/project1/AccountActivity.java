@@ -116,7 +116,7 @@ public class AccountActivity extends AppCompatActivity {
 				}
 
 				// creates new user
-				User user = new User(username, password);
+				User user = new User(username, password, false);
 				// adds user to db
 				long userId =  db.getUserDao().insert(user);
 				// Confirms to the user that the user was created

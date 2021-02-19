@@ -1,7 +1,9 @@
 package com.group1.project1.data;
 
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
@@ -26,6 +28,7 @@ public class User {
 	private long id;
 	private String username;
 	private String password;
+	private boolean admin;
 	// The inventory that holds the users berries
 	private String berries;
 	// The inventory that holds the users pokemon
@@ -38,9 +41,10 @@ public class User {
 	 * @param username	username of new user
 	 * @param password	password of new user
 	 */
-	public User(String username, String password) {
+	public User(String username, String password, boolean admin) {
 		this.username = username;
 		this.password = password;
+		this.admin = admin;
 		this.catches = 0;
 		this.berries = "[]";
 		this.pokemon = "[]";
@@ -69,6 +73,10 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public boolean getAdmin() { return admin; }
+
+	public void setAdmin(boolean admin) { this.admin = admin; }
 
 	public String getBerries() {
 		return berries;
@@ -100,6 +108,14 @@ public class User {
 
 	public String[] getBerryList() {
 		return new Gson().fromJson(berries, String[].class);
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public static User populateData() {
+		return new User("admin", "admin", true);
 	}
 
 	/**
@@ -146,7 +162,10 @@ public class User {
 	 * Gets hashcode of user
 	 * @return hashcode of user
 	 */
+	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 	@Override public int hashCode() {
 		return Objects.hash(id, username, password, berries, pokemon, catches);
 	}
+
+
 }
