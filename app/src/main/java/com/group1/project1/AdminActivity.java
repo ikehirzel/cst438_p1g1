@@ -29,7 +29,7 @@ public class AdminActivity extends AppCompatActivity {
 
         List<User> users = db.getUserDao().getUsers();
 
-        userAdapter = new UserAdapter(users);
+        userAdapter = new UserAdapter(users, db);
         userRecycler.setAdapter(userAdapter);
         userRecycler.setLayoutManager(new LinearLayoutManager(this));
     }
